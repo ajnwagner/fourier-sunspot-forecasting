@@ -153,7 +153,7 @@ def main():
         start_years=start_years,
         verbose=verbose,
         save_to_csv=True,
-        save_best_predictions=True,
+        save_best_predictions=False, # Stops the generation of another csv file in results
         skip_cv=not args.cv,
         apply_merit_weights=args.merit_weights,
     )
