@@ -26,6 +26,8 @@ def plot_forecast(
     save: bool = True,
     show: bool = False,
     output_filename: str | None = None,
+    forecast_start_year: int | None = None,
+    forecast_end_year: int | None = None,
 ) -> None:
     """
     Plot historical data and future forecast for a specific model.
@@ -39,10 +41,9 @@ def plot_forecast(
         save: Save figure to disk
         show: Display figure interactively
         output_filename: Custom output filename
+        forecast_start_year: Start year for filename (if provided)
+        forecast_end_year: End year for filename (if provided)
     """
-    import sys
-    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-    
     from src.data.sunspot_data import get_feature_matrix, LAGS
     from src.models.registry import get_model
     
@@ -171,13 +172,18 @@ def plot_forecast(
     
     if save:
         if output_filename is None:
-            # Use exact year ranges in filename (historical start to future end)
-            hist_start_year = int(X_display.index[0].year)  # type: ignore
-            future_end_year = int(future_dates[-1].year)
-            output_filename = f"forecast_{model_name}_{hist_start_year}_{future_end_year}.png"
+            # Use provided years or calculate from data
+            if forecast_start_year and forecast_end_year:
+                output_filename = f"forecast_{model_name}_{forecast_start_year}_{forecast_end_year}.png"
+            else:
+                # Use exact year ranges in filename (historical start to future end)
+                hist_start_year = int(X_display.index[0].year)  # type: ignore
+                future_end_year = int(future_dates[-1].year)
+                output_filename = f"forecast_{model_name}_{hist_start_year}_{future_end_year}.png"
         output_path = FIGURES_DIR / output_filename
         plt.savefig(output_path, dpi=300, bbox_inches="tight")
         print(f"Saved: {output_path}")
+
     
     if show:
         plt.show()
@@ -186,5 +192,29 @@ def plot_forecast(
 
 
 if __name__ == "__main__":
-    # Example usage
-    plot_forecast("random_forest", years_past=10, years_future=10, save=True, show=False)
+    import sys
+    
+    if len(sys.argv) >= 4:
+        # Parse command-line arguments: model_name start_year end_year
+        model_name = sys.argv[1]
+        start_year = int(sys.argv[2])
+        end_year = int(sys.argv[3])
+        
+        # Calculate years_past and years_future from current year
+        from datetime import datetime
+        current_year = datetime.now().year
+        years_past = current_year - start_year
+        years_future = end_year - current_year
+        
+        plot_forecast(
+            model_name, 
+            years_past=years_past, 
+            years_future=years_future, 
+            save=True, 
+            show=False,
+            forecast_start_year=start_year,
+            forecast_end_year=end_year
+        )
+    else:
+        # Example usage
+        plot_forecast("random_forest", years_past=10, years_future=10, save=True, show=False)

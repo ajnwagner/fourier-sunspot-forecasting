@@ -111,22 +111,22 @@ def get_model(name: str):
 
 # All available model names
 AVAILABLE_MODELS = [
-    "linear_regression",
-    "ridge",
-    "lasso",
     "elastic_net",
-    "random_forest",
-    "xgboost",
-    "kneighbors",
-    "svm",
     "gaussian_process",
+    "kneighbors",
+    "lasso",
+    "linear_regression",
+    "random_forest",
+    "ridge",
+    "svm",
+    "xgboost",
 ]
 
 # Default models (core set for typical experiments)
 DEFAULT_MODELS = [
+    "kneighbors",
     "linear_regression",
     "random_forest",
-    "xgboost",
-    "kneighbors",
     "svm",
+    "xgboost",
 ]

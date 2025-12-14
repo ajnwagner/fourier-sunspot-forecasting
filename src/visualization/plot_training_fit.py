@@ -34,9 +34,6 @@ def plot_training_fit(
         show: Display figure interactively
         output_filename: Custom output filename
     """
-    import sys
-    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-    
     from src.data.sunspot_data import get_feature_matrix, LAGS
     from src.models.registry import get_model
     
